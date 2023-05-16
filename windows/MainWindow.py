@@ -36,7 +36,7 @@ def loadPaths(startpath: str, tree) -> None:
             parentalItem.setIcon(0, QIcon("assets\processing.png"))
 
 
-def getItemFullPath(item : QTreeWidgetItem):
+def getItemFullPath(item : QTreeWidgetItem) -> str:
     out = item.text(0)
 
     if item.parent():
@@ -55,6 +55,9 @@ class MainWindow(QMainWindow):
 
 
     def initUi(self):
+        '''
+        Инициализация UI
+        '''
         self.setWindowTitle("гуся.net")
         self.setWindowIcon(QIcon("assets/swan.png"))
 
@@ -89,6 +92,9 @@ class MainWindow(QMainWindow):
 
 
     def initResultsAndControls(self):
+        '''
+        Инициализация древа файлов и папок в результатах и контроля параметров модели
+        '''
         self.resultFileTree = QTreeWidget()
         self.resultFileTree.setHeaderLabel("Results")
         self.resultFileTree.setMaximumWidth(int(self.windowWidth / 5))
@@ -123,10 +129,16 @@ class MainWindow(QMainWindow):
 
 
     def onSliderValueChange(self):
+        '''
+        Функция вызываемая при смене значения на слайдере
+        '''
         self.detectionPercentLabel.setText(str(self.sender().value()) + "%")
 
 
     def initImageBrowser(self):
+        '''
+        Инициализация браузера изображений
+        '''
         self.imageBrowser = ImageBrowser()
         self.imageBrowser.updatePixmap(None)
         self.imageBrowser.setMaximumWidth(int(self.windowWidth / 2))
@@ -135,6 +147,9 @@ class MainWindow(QMainWindow):
 
 
     def initGraphsAndInfo(self):
+        '''
+        Инициализация графиков и информации о полученных фото
+        '''
         self.graphsAndInfoScroll = QScrollArea()
         self.graphsAndInfoScroll.setWidgetResizable(True)
         self.graphsAndInfoScroll.setMaximumWidth(int(self.windowWidth / 3.5))
@@ -163,6 +178,9 @@ class MainWindow(QMainWindow):
 
     
     def plotPlaceholderData(self):
+        '''
+        Затычка для данных графиков
+        '''
         self.axes = self.figure.add_subplot(211)
 
         self.axes.grid(alpha = 0.2)
@@ -190,6 +208,9 @@ class MainWindow(QMainWindow):
 
 
     def treeItemClicked(self, it : QTreeWidgetItem, col):
+        '''
+        Функция вызываемая при нажатии на элемент в дереве файлов папки результатов
+        '''
         if not os.path.isdir(getItemFullPath(it)):
             print(getItemFullPath(it))
             self.imageBrowser.updatePixmap(getItemFullPath(it))

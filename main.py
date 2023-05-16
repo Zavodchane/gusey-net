@@ -8,6 +8,9 @@ sys.path.append(".")
 
 
 def setupFolders():
+    '''
+    Подготовка папки результатов при ее отсутствии
+    '''
     try: os.mkdir("results")
     except FileExistsError: pass
 
