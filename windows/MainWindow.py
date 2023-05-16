@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import (
+    QApplication,
     QMainWindow,
     QHBoxLayout,
     QWidget,
@@ -53,6 +54,14 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("гуся.net")
         self.setWindowIcon(QIcon("assets/swan.png"))
 
+        screen = QApplication.primaryScreen()
+        screenSize = screen.size()
+
+        self.windowWidth  = screenSize.width()
+        self.windowHeight = screenSize.height()
+
+        print(self.windowHeight, self.windowWidth)
+
         self.primaryLayout   = QHBoxLayout()
         self.firstColLayout  = QVBoxLayout()
         self.secondColLayout = QVBoxLayout()
@@ -78,9 +87,9 @@ class MainWindow(QMainWindow):
     def initResultsAndControls(self):
         self.resultFileTree = QTreeWidget()
         self.resultFileTree.setHeaderLabel("Results")
-        self.resultFileTree.setMaximumWidth(300)
-        self.resultFileTree.setMinimumWidth(150)
-        self.resultFileTree.setMaximumHeight(500)
+        self.resultFileTree.setMaximumWidth(int(self.windowWidth / 5))
+        self.resultFileTree.setMinimumWidth(int(self.windowWidth / 6))
+        self.resultFileTree.setMaximumHeight(int(self.windowHeight / 2))
         self.resultFileTree.itemClicked.connect(self.treeItemClicked)
 
         loadPaths(startpath=RESULT_PATH, tree=self.resultFileTree)
@@ -96,7 +105,7 @@ class MainWindow(QMainWindow):
         self.detectionPercentLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.detectionPercentSlider = QSlider(Qt.Orientation.Horizontal)
-        self.detectionPercentSlider.setMaximumWidth(265)
+        self.detectionPercentSlider.setMaximumWidth(int(self.windowWidth / 5) - 35)
         self.detectionPercentSlider.setRange(1, 100)
         self.detectionPercentSlider.setSingleStep(1)
         self.detectionPercentSlider.valueChanged.connect(self.onSliderValueChange)
@@ -107,8 +116,6 @@ class MainWindow(QMainWindow):
         self.firstColLayout.addWidget(self.resultFileTree)
         self.firstColLayout.addWidget(self.detectionSliderLabel)
         self.firstColLayout.addLayout(self.sliderLayout)
-        # self.firstColLayout.addWidget(self.detectionPercentLabel)
-        # self.firstColLayout.addWidget(self.detectionPercentSlider)
 
 
     def onSliderValueChange(self):
@@ -118,8 +125,7 @@ class MainWindow(QMainWindow):
     def initImageBrowser(self):
         self.imageBrowser = ImageBrowser()
         self.imageBrowser.updatePixmap(None)
-        self.imageBrowser.setMaximumWidth(1000)
-        self.imageBrowser.setMinimumWidth(600)
+        self.imageBrowser.setMaximumWidth(int(self.windowWidth / 2))
 
         self.secondColLayout.addWidget(self.imageBrowser, alignment=Qt.AlignmentFlag.AlignTop)
 
@@ -127,16 +133,15 @@ class MainWindow(QMainWindow):
     def initGraphsAndInfo(self):
         self.graphsAndInfoScroll = QScrollArea()
         self.graphsAndInfoScroll.setWidgetResizable(True)
-        self.graphsAndInfoScroll.setFixedWidth(600)
-        self.graphsAndInfoScroll
+        self.graphsAndInfoScroll.setMaximumWidth(int(self.windowWidth / 4))
 
         self.placeholderGraph = QLabel()
-        self.placeholderGraph.setPixmap(QPixmap("assets/placeholder_graph.png").scaledToWidth(560))
-        self.placeholderGraph.setFixedWidth(560)
+        self.placeholderGraph.setMaximumWidth(int(self.windowWidth / 4) - 30)
+        self.placeholderGraph.setPixmap(QPixmap("assets/placeholder_graph.png").scaledToWidth(self.placeholderGraph.maximumWidth()))
 
         self.placeholderInfo = QTextBrowser()
+        self.placeholderInfo.setMaximumWidth(int(self.windowWidth / 4) - 30)
         self.placeholderInfo.setText("Очень важная информация о лебедях и возможно гусях))")
-        self.placeholderInfo.setFixedWidth(560)
 
         self.GIContainer = QWidget()
         self.GIContainerLayout = QVBoxLayout()
