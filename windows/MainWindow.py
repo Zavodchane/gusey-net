@@ -12,13 +12,17 @@ from PyQt6.QtWidgets import (
     QSlider
 )
 
-from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt
 
 import os
 
 from constants.paths import RESULT_PATH
 from widgets.ImageBrowser import ImageBrowser
+
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationTool
+from matplotlib.figure import Figure
 
 def loadPaths(startpath: str, tree) -> None:
     for elem in os.listdir(startpath):
@@ -133,19 +137,22 @@ class MainWindow(QMainWindow):
     def initGraphsAndInfo(self):
         self.graphsAndInfoScroll = QScrollArea()
         self.graphsAndInfoScroll.setWidgetResizable(True)
-        self.graphsAndInfoScroll.setMaximumWidth(int(self.windowWidth / 4))
+        self.graphsAndInfoScroll.setMaximumWidth(int(self.windowWidth / 3.5))
 
-        self.placeholderGraph = QLabel()
-        self.placeholderGraph.setMaximumWidth(int(self.windowWidth / 4) - 30)
-        self.placeholderGraph.setPixmap(QPixmap("assets/placeholder_graph.png").scaledToWidth(self.placeholderGraph.maximumWidth()))
+        self.figure  = Figure(figsize=(4, 6))
+        self.canvas  = FigureCanvas(self.figure)
+
+        self.figure.subplots_adjust(top = 0.98, bottom=0.0, right = 0.98, left = 0.11)
+
+        self.plotPlaceholderData()
 
         self.placeholderInfo = QTextBrowser()
-        self.placeholderInfo.setMaximumWidth(int(self.windowWidth / 4) - 30)
+        self.placeholderInfo.setMaximumWidth(int(self.windowWidth / 3.5) - 20)
         self.placeholderInfo.setText("Очень важная информация о лебедях и возможно гусях))")
 
         self.GIContainer = QWidget()
         self.GIContainerLayout = QVBoxLayout()
-        self.GIContainerLayout.addWidget(self.placeholderGraph)
+        self.GIContainerLayout.addWidget(self.canvas)
         self.GIContainerLayout.addWidget(self.placeholderInfo )
 
         self.GIContainer.setLayout(self.GIContainerLayout)
@@ -153,6 +160,33 @@ class MainWindow(QMainWindow):
         self.graphsAndInfoScroll.setWidget(self.GIContainer)
 
         self.thirdColLayout.addWidget(self.graphsAndInfoScroll)
+
+    
+    def plotPlaceholderData(self):
+        self.axes = self.figure.add_subplot(211)
+
+        self.axes.grid(alpha = 0.2)
+        
+        self.axes.set_ylabel("Кол-во лебедей")
+        self.axes.set_xlabel("Месяц")
+
+        months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+        swans_1 = [1,  3, 10, 3, 4, 1, 5, 8, 2, 3, 1, 4]
+        swans_2 = [4, 12, 14, 7, 4, 1, 6, 5, 6, 8, 4, 6]
+        swans_3 = [13, 9, 10, 3, 8, 9, 5, 8, 2, 7, 2, 3]
+        labels  = ["Лебеди 1", "Лебеди 2", "Лебеди 3"]
+        
+        self.axes.plot(months, swans_1, label=labels[0])
+        self.axes.plot(months, swans_2, label=labels[1])
+        self.axes.plot(months, swans_3, label=labels[2])
+
+        self.axes.legend()
+
+
+        self.totalAxes = self.figure.add_subplot(212)
+        self.totalAxes.pie([sum(swans_1), sum(swans_2), sum(swans_3)], labels=labels, wedgeprops=dict(width = 0.5))
+
+        self.canvas.draw()
 
 
     def treeItemClicked(self, it : QTreeWidgetItem, col):
