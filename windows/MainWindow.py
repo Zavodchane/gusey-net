@@ -7,7 +7,8 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QScrollArea,
     QTextBrowser,
-    QLabel
+    QLabel,
+    QSlider
 )
 
 from PyQt6.QtGui import QIcon, QPixmap
@@ -57,11 +58,12 @@ class MainWindow(QMainWindow):
         self.secondColLayout = QVBoxLayout()
         self.thirdColLayout  = QVBoxLayout()
 
-        self.initResultFileTree()
+        self.initResultsAndControls()
         self.initImageBrowser()
         self.initGraphsAndInfo()
 
         self.secondColLayout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        self.firstColLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.primaryLayout.addLayout(self.firstColLayout)
         self.primaryLayout.addLayout(self.secondColLayout)
@@ -73,16 +75,44 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.container)
 
 
-    def initResultFileTree(self):
+    def initResultsAndControls(self):
         self.resultFileTree = QTreeWidget()
         self.resultFileTree.setHeaderLabel("Results")
-        self.resultFileTree.itemClicked.connect(self.treeItemClicked)
         self.resultFileTree.setMaximumWidth(300)
         self.resultFileTree.setMinimumWidth(150)
+        self.resultFileTree.setMaximumHeight(500)
+        self.resultFileTree.itemClicked.connect(self.treeItemClicked)
 
         loadPaths(startpath=RESULT_PATH, tree=self.resultFileTree)
 
+        self.sliderLayout = QHBoxLayout()
+
+        self.detectionSliderLabel = QLabel("Процент уверенности")
+        self.detectionSliderLabel.setMaximumHeight(15)
+        self.detectionSliderLabel.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+
+        self.detectionPercentLabel = QLabel("1%")
+        self.detectionPercentLabel.setMaximumWidth(30)
+        self.detectionPercentLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
+
+        self.detectionPercentSlider = QSlider(Qt.Orientation.Horizontal)
+        self.detectionPercentSlider.setMaximumWidth(265)
+        self.detectionPercentSlider.setRange(1, 100)
+        self.detectionPercentSlider.setSingleStep(1)
+        self.detectionPercentSlider.valueChanged.connect(self.onSliderValueChange)
+
+        self.sliderLayout.addWidget(self.detectionPercentLabel)
+        self.sliderLayout.addWidget(self.detectionPercentSlider)
+
         self.firstColLayout.addWidget(self.resultFileTree)
+        self.firstColLayout.addWidget(self.detectionSliderLabel)
+        self.firstColLayout.addLayout(self.sliderLayout)
+        # self.firstColLayout.addWidget(self.detectionPercentLabel)
+        # self.firstColLayout.addWidget(self.detectionPercentSlider)
+
+
+    def onSliderValueChange(self):
+        self.detectionPercentLabel.setText(str(self.sender().value()) + "%")
 
 
     def initImageBrowser(self):
@@ -98,6 +128,7 @@ class MainWindow(QMainWindow):
         self.graphsAndInfoScroll = QScrollArea()
         self.graphsAndInfoScroll.setWidgetResizable(True)
         self.graphsAndInfoScroll.setFixedWidth(600)
+        self.graphsAndInfoScroll
 
         self.placeholderGraph = QLabel()
         self.placeholderGraph.setPixmap(QPixmap("assets/placeholder_graph.png").scaledToWidth(560))
