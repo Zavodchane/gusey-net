@@ -157,14 +157,18 @@ def run(
 
                     if save_img or save_crop or view_img:  # Add bbox to image
                         c = int(cls)  # integer class
-                        label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
+                        label = names[c] if hide_conf else f'{names[c]} {conf:.2f}'
 
 
                         # Добавление лейбла в словарь в соответствии с файлом к которому он относится
-                        filesToLabelsDict[p.name].append(tuple(label.split(" ")))
+                        if (label != None) : filesToLabelsDict[p.name].append(tuple(label.split(" ")))
                         
+                        if not hide_labels: 
+                            box_label = label 
+                        else: 
+                            box_label = None
 
-                        annotator.box_label(xyxy, label, color=colors(c, True))
+                        annotator.box_label(xyxy, box_label, color=colors(c, True))
                     if save_crop:
                         save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
 

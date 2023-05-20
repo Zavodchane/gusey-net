@@ -66,8 +66,26 @@ def getItemFullPath(item : QTreeWidgetItem) -> str:
     return out
 
 
-def accuracy(detectOutput : dict) -> float:
-    pass
+def accuracy(detectOutput : dict, filesCount) -> float:
+    correctFiles = 0
+    labelsNotShowed = False
+
+    for fileName, labelAccTupleList in detectOutput.items():
+
+        maxConfTuple = max(labelAccTupleList, key = lambda labelAccTuple: labelAccTuple[1])
+        
+        className = maxConfTuple[0]
+
+        if ("img" or "shipun") in fileName:
+            if className == "shipun":
+                correctFiles += 1
+        elif (className in fileName) and (className != ""):
+            correctFiles += 1
+
+
+    print(correctFiles, filesCount)
+
+    return (correctFiles / filesCount) * 100
 
 
 class MainWindow(QMainWindow):
@@ -183,7 +201,7 @@ class MainWindow(QMainWindow):
 
         self.lineThicknessSlider = QSlider(Qt.Orientation.Horizontal)
         self.lineThicknessSlider.setMaximumWidth(int(self.windowWidth / 5) - 35)
-        self.lineThicknessSlider.setRange(1, 10)
+        self.lineThicknessSlider.setRange(0, 10)
         self.lineThicknessSlider.setValue(3)
         self.lineThicknessSlider.setSingleStep(1)
         self.lineThicknessSlider.valueChanged.connect(self.onThicknessSliderValueChange)
@@ -213,6 +231,11 @@ class MainWindow(QMainWindow):
         self.deviceCheckBoxesLayout.addWidget(self.cpuCheckBox)
         self.deviceCheckBoxesLayout.addWidget(self.cudaCheckBox)
         # ======================================================================
+
+
+        self.arelabelsNotShowedCheckBox = QCheckBox("Режим классификации (без детекции)")
+        self.arelabelsNotShowedCheckBox.stateChanged.connect(self.labelsCheckBoxChange)
+        self.arelabelsNotShowedCheckBox.setMaximumWidth(140)
 
 
         # Окно с отображением пути выбранной папки =============================
@@ -253,6 +276,7 @@ class MainWindow(QMainWindow):
         self.firstColLayout.addLayout(self.lineThicknessSliderLayout)
         self.firstColLayout.addWidget(self.deviceCheckBoxesLabel)
         self.firstColLayout.addLayout(self.deviceCheckBoxesLayout)
+        self.firstColLayout.addWidget(self.arelabelsNotShowedCheckBox)
         self.firstColLayout.addLayout(self.pathLayout)
         self.firstColLayout.addWidget(self.chooseFolderButton)
         self.firstColLayout.addWidget(self.detectButton)
@@ -282,6 +306,18 @@ class MainWindow(QMainWindow):
                 self.cudaCheckBox.setChecked(False)
             elif self.sender() == self.cudaCheckBox:
                 self.cpuCheckBox.setChecked(False)
+
+
+    def labelsCheckBoxChange(self):
+        if self.sender().checkState() == Qt.CheckState.Checked:
+            self.labelsNotShowed = True
+            self.lineThicknessSlider.setValue(0)
+        else:
+            self.labelsNotShowed = False
+            self.lineThicknessSlider.setValue(3)
+
+        
+        self.lineThicknessSlider.setEnabled(not self.labelsNotShowed)
 
 
     def chooseFolder(self):
@@ -410,9 +446,14 @@ class MainWindow(QMainWindow):
             device = "cpu"
 
 
+        if self.labelsNotShowed:
+            thickness = 0
+        else:
+            thickness = self.lineThicknessSlider.value()
+
         # Аргументы для модели =================================================
         options = {
-            'weights': ['models\\best_yolov5x_10e.pt'], 
+            'weights': ['models\\best_yolov5s_50e.pt'], 
             'source': self.currentlySelectedFolder, 
             'data': WindowsPath('data/coco128.yaml'), 
             'imgsz': [640, 640], 
@@ -433,8 +474,8 @@ class MainWindow(QMainWindow):
             'project': WindowsPath('results'), 
             'name': 'run', 
             'exist_ok': False, 
-            'line_thickness': self.lineThicknessSlider.value(), 
-            'hide_labels': False, 
+            'line_thickness': thickness, 
+            'hide_labels': self.labelsNotShowed, 
             'hide_conf': False, 
             'half': False, 
             'dnn': False, 
@@ -447,7 +488,7 @@ class MainWindow(QMainWindow):
         detectResults = detect(options)
         # for key, val in detectResults.items():
         #     print(f"{key} : {val}")
-        print(f"Точность при валидации: {accuracy(detectResults)}%")
+        print(f"Точность при валидации: {accuracy(detectResults, len(os.listdir(self.currentlySelectedFolder)))}%")
         # ======================================================================
 
         # Обновление древа файлов результатов после детектирования =============
