@@ -94,6 +94,7 @@ def accuracy(detectOutput : dict, filesCount) -> float:
 
 class MainWindow(QMainWindow):
     currentlySelectedFolder = ""
+    labelsNotShowed = False
 
     def __init__(self) -> None:
         super().__init__()
@@ -502,7 +503,7 @@ class MainWindow(QMainWindow):
         date = f"{date[2]}.{date[1].replace('0', '')}.{date[0]}"
         for _, val in detectResults.items():
             for swan in val:
-                statistic_db.add_record(swan_name=en_to_rus[swan],
+                statistic_db.add_record(swan_name=en_to_rus[swan[0]],
                                         quantity=1,
                                         date=date)
 
