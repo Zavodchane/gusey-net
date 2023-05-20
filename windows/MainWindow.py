@@ -16,7 +16,7 @@ from PyQt6.QtWidgets import (
     QFileDialog
 )
 
-from PyQt6.QtGui import QIcon, QMovie
+from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt
 
 import os
@@ -64,6 +64,10 @@ def getItemFullPath(item : QTreeWidgetItem) -> str:
         out =  "results/" + out
 
     return out
+
+
+def accuracy(detectOutput : dict) -> float:
+    pass
 
 
 class MainWindow(QMainWindow):
@@ -441,7 +445,9 @@ class MainWindow(QMainWindow):
         
         # Вызов функции детектирования =========================================
         detectResults = detect(options)
-        print(detectResults)
+        # for key, val in detectResults.items():
+        #     print(f"{key} : {val}")
+        print(f"Точность при валидации: {accuracy(detectResults)}%")
         # ======================================================================
 
         # Обновление древа файлов результатов после детектирования =============

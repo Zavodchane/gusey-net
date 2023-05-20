@@ -147,8 +147,6 @@ def run(
                     n = (det[:, 5] == c).sum()  # detections per class
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
-                buff_idx = 0
-
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
                     if save_txt:  # Write to file
@@ -163,7 +161,7 @@ def run(
 
 
                         # Добавление лейбла в словарь в соответствии с файлом к которому он относится
-                        filesToLabelsDict[p.name].append(label)
+                        filesToLabelsDict[p.name].append(tuple(label.split(" ")))
                         
 
                         annotator.box_label(xyxy, label, color=colors(c, True))
