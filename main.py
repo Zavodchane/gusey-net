@@ -4,7 +4,9 @@ from windows.MainWindow import MainWindow
 
 import sys, os
 
-sys.path.append(".")
+
+if "." not in sys.path:
+    sys.path.append(".")
 
 
 def setupFolders():
@@ -13,6 +15,7 @@ def setupFolders():
     '''
     try: os.mkdir("results")
     except FileExistsError: pass
+
 
 setupFolders()
 
