@@ -444,7 +444,6 @@ class MainWindow(QMainWindow):
         print(detectResults)
         # ======================================================================
 
-
         # Обновление древа файлов результатов после детектирования =============
         self.resultFileTree.clear()
         loadPaths(RESULT_PATH, self.resultFileTree)
