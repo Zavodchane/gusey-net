@@ -8,6 +8,10 @@ from pathlib import Path, WindowsPath
 
 import torch
 
+'''
+Измененный файл детектирования YOLOv5, перестроен для вызова из GUI, а не консоли
+'''
+
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
 if str(ROOT) not in sys.path:

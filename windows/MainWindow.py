@@ -38,6 +38,9 @@ from threading import Thread
 
 
 def loadPaths(startpath: str, tree : QTreeWidget) -> None:
+    '''
+    Рекурсивная подгрузка файлов в древо файлов
+    '''
     for elem in os.listdir(startpath):
         elemPath = startpath + "/" + elem
         parentalItem = QTreeWidgetItem(tree, [os.path.basename(elem)])
@@ -50,6 +53,9 @@ def loadPaths(startpath: str, tree : QTreeWidget) -> None:
 
 
 def getItemFullPath(item : QTreeWidgetItem) -> str:
+    '''
+    Рекурсивное получение полного пути члена дерева файлов
+    '''
     out = item.text(0)
 
     if item.parent():
@@ -76,32 +82,48 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("гуся.net")
         self.setWindowIcon(QIcon("assets/swan.png"))
 
+
+        # Получение размеров экрана ===========================================
         screen = QApplication.primaryScreen()
         screenSize = screen.size()
 
         self.windowWidth  = screenSize.width()
         self.windowHeight = screenSize.height()
+        # ======================================================================
 
-        print(self.windowHeight, self.windowWidth)
 
+        # Создание лейаутов приложения =========================================
         self.primaryLayout   = QHBoxLayout()
         self.firstColLayout  = QVBoxLayout()
         self.secondColLayout = QVBoxLayout()
         self.thirdColLayout  = QVBoxLayout()
+        # ======================================================================
 
+
+        # Вызов функций создания основных блоков GUI ===========================
         self.initResultsAndControls()
         self.initImageBrowser()
         self.initGraphsAndInfo()
+        # ======================================================================
 
+
+        # Установка ориентаций элементов в лейаутах ============================
         self.secondColLayout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         self.firstColLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        # ======================================================================
 
+
+        # Добавление вторичных лейаутов в основной =============================
         self.primaryLayout.addLayout(self.firstColLayout)
         self.primaryLayout.addLayout(self.secondColLayout)
         self.primaryLayout.addLayout(self.thirdColLayout)
+        # ======================================================================
 
+
+        # Виджет-контейнер для остальных элментов GUI ==========================
         self.container = QWidget()
         self.container.setLayout(self.primaryLayout)
+        # ======================================================================
 
         self.setCentralWidget(self.container)
 
@@ -110,6 +132,8 @@ class MainWindow(QMainWindow):
         '''
         Инициализация древа файлов и папок в результатах и контроля параметров модели
         '''
+
+        # Виджет древа файлов в папке результатов
         self.resultFileTree = QTreeWidget()
         self.resultFileTree.setHeaderLabel("Results")
         self.resultFileTree.setMaximumWidth(int(self.windowWidth / 5))
@@ -119,6 +143,7 @@ class MainWindow(QMainWindow):
 
         loadPaths(startpath=RESULT_PATH, tree=self.resultFileTree)
 
+        # Слайдер процента уверенности ========================================
         self.detectionPercentSliderLayout = QHBoxLayout()
 
         self.detectionSliderLabel = QLabel("Минимальный процент уверенности")
@@ -138,8 +163,10 @@ class MainWindow(QMainWindow):
 
         self.detectionPercentSliderLayout.addWidget(self.detectionPercentLabel)
         self.detectionPercentSliderLayout.addWidget(self.detectionPercentSlider)
+        # ======================================================================
 
 
+        # Слайдер толщины линии обводки лебедей ================================
         self.lineThicknessSliderLayout = QHBoxLayout()
 
         self.lineThicknessSliderLabel = QLabel("Толщина линий выделения")
@@ -159,8 +186,10 @@ class MainWindow(QMainWindow):
 
         self.lineThicknessSliderLayout.addWidget(self.lineThicknessLabel)
         self.lineThicknessSliderLayout.addWidget(self.lineThicknessSlider)
+        # ======================================================================
 
 
+        # Чекбоксы девайсов для работы модели ==================================
         self.deviceCheckBoxesLabel = QLabel("Девайс")
         self.deviceCheckBoxesLabel.setMaximumHeight(15)
         self.deviceCheckBoxesLabel.setAlignment(Qt.AlignmentFlag.AlignHCenter)
@@ -179,8 +208,10 @@ class MainWindow(QMainWindow):
 
         self.deviceCheckBoxesLayout.addWidget(self.cpuCheckBox)
         self.deviceCheckBoxesLayout.addWidget(self.cudaCheckBox)
+        # ======================================================================
 
 
+        # Окно с отображением пути выбранной папки =============================
         self.pathLayout = QHBoxLayout()
 
         self.pathLabel = QLabel("Выбранная папка:")
@@ -194,17 +225,23 @@ class MainWindow(QMainWindow):
 
         self.pathLayout.addWidget(self.pathLabel)
         self.pathLayout.addWidget(self.pathDisplay)
+        # ======================================================================
 
 
+        # Кнопка выбора папки ==================================================
         self.chooseFolderButton = QPushButton("Выбрать папку")
         self.chooseFolderButton.clicked.connect(self.chooseFolder)
+        # ======================================================================
 
 
+        # Кнопка детект ========================================================
         self.detectButton = QPushButton("Detect")
         self.detectButton.clicked.connect(self.onDetectButtonClicked)
         self.detectButton.setEnabled(False)
+        # ======================================================================
 
 
+        # Добавление виджетов и лейаутов по их колонкам ========================
         self.firstColLayout.addWidget(self.resultFileTree)
         self.firstColLayout.addWidget(self.detectionSliderLabel)
         self.firstColLayout.addLayout(self.detectionPercentSliderLayout)
@@ -215,6 +252,7 @@ class MainWindow(QMainWindow):
         self.firstColLayout.addLayout(self.pathLayout)
         self.firstColLayout.addWidget(self.chooseFolderButton)
         self.firstColLayout.addWidget(self.detectButton)
+        # ======================================================================
 
 
     def onPercentSliderValueChange(self):
@@ -232,6 +270,9 @@ class MainWindow(QMainWindow):
 
 
     def checkBoxCheckMate(self):
+        '''
+        Функция проверки чекбоксов и соответствующей смены их состояний
+        '''
         if self.sender().checkState() == Qt.CheckState.Checked:
             if   self.sender() == self.cpuCheckBox:
                 self.cudaCheckBox.setChecked(False)
@@ -240,6 +281,9 @@ class MainWindow(QMainWindow):
 
 
     def chooseFolder(self):
+        '''
+        Функция вызываемая при нажатии на кнопку выбора папки с изображениями
+        '''
         currentUser = os.environ.get('USER', os.environ.get('USERNAME'))
         self.currentlySelectedFolder = QFileDialog(directory=f"C:/Users/{currentUser}/Pictures").getExistingDirectory()
 
@@ -247,6 +291,9 @@ class MainWindow(QMainWindow):
 
 
     def updatePathDisplay(self):
+        '''
+        Функция обновленя отображения окна пути выбранной в данный момент папки
+        '''
         self.pathDisplay.setText(self.currentlySelectedFolder)
         if self.currentlySelectedFolder != "":
             self.detectButton.setEnabled(True)
@@ -269,10 +316,15 @@ class MainWindow(QMainWindow):
         '''
         Инициализация графиков и информации о полученных фото
         '''
+
+        # Область для скролла графов и информации ==============================
         self.graphsAndInfoScroll = QScrollArea()
         self.graphsAndInfoScroll.setWidgetResizable(True)
         self.graphsAndInfoScroll.setMaximumWidth(int(self.windowWidth / 3.5))
+        # ======================================================================
 
+
+        # Подготовка для создания графиков =====================================
         self.figure  = Figure(figsize=(4, 6))
         self.canvas  = FigureCanvas(self.figure)
 
@@ -280,10 +332,15 @@ class MainWindow(QMainWindow):
 
         self.plotPlaceholderData()
 
+
+        # Затычка поля для информации в текстовом виде =========================
         self.placeholderInfo = QTextBrowser()
         self.placeholderInfo.setMaximumWidth(int(self.windowWidth / 3.5) - 20)
         self.placeholderInfo.setText("Очень важная информация о лебедях и возможно гусях))")
+        # ======================================================================
 
+
+        # Контейнер для графиков и информации ==================================
         self.GIContainer = QWidget()
         self.GIContainerLayout = QVBoxLayout()
         self.GIContainerLayout.addWidget(self.canvas)
@@ -292,7 +349,10 @@ class MainWindow(QMainWindow):
         self.GIContainer.setLayout(self.GIContainerLayout)
         
         self.graphsAndInfoScroll.setWidget(self.GIContainer)
+        # ======================================================================
 
+        
+        # Добавление графов и информации в соответствующую колонку
         self.thirdColLayout.addWidget(self.graphsAndInfoScroll)
 
     
@@ -327,11 +387,17 @@ class MainWindow(QMainWindow):
 
     
     def onDetectButtonClicked(self):
+        '''
+        Функция вызываемая при нажатии на кнопку Detect, создает отдельный поток для выполнения детектирования
+        '''
         detection_thread = Thread(target=self.detect)
         detection_thread.start()
 
     
     def detect(self):
+        '''
+        Функция детектирования
+        '''
         self.detectButton.setEnabled(False)
 
         if self.cudaCheckBox.isChecked():
@@ -339,6 +405,8 @@ class MainWindow(QMainWindow):
         else: 
             device = "cpu"
 
+
+        # Аргументы для модели =================================================
         options = {
             'weights': ['models\\best_yolov5s.pt'], 
             'source': self.currentlySelectedFolder, 
@@ -368,14 +436,23 @@ class MainWindow(QMainWindow):
             'dnn': False, 
             'vid_stride': 1
         }
-        
-        detect(options)
+        # ======================================================================
 
+        
+        # Вызов функции детектирования =========================================
+        detect(options)
+        # ======================================================================
+
+
+        # Обновление древа файлов результатов после детектирования =============
         self.resultFileTree.clear()
         loadPaths(RESULT_PATH, self.resultFileTree)
+        # ======================================================================
 
+        # Обновления поля выбранной в данный момент папки ======================
         self.currentlySelectedFolder = ""
         self.updatePathDisplay()
+        # ======================================================================
 
 
     def treeItemClicked(self, it : QTreeWidgetItem, col):
