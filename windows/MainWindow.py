@@ -445,12 +445,6 @@ class MainWindow(QMainWindow):
         else: 
             device = "cpu"
 
-
-        if self.labelsNotShowed:
-            thickness = 0
-        else:
-            thickness = self.lineThicknessSlider.value()
-
         # Аргументы для модели =================================================
         options = {
             'weights': ['models\\best_yolov5s_50e.pt'], 
@@ -474,7 +468,7 @@ class MainWindow(QMainWindow):
             'project': WindowsPath('results'), 
             'name': 'run', 
             'exist_ok': False, 
-            'line_thickness': thickness, 
+            'line_thickness': self.lineThicknessSlider.value(), 
             'hide_labels': self.labelsNotShowed, 
             'hide_conf': False, 
             'half': False, 
