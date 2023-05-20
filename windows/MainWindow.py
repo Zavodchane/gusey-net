@@ -340,7 +340,7 @@ class MainWindow(QMainWindow):
             device = "cpu"
 
         options = {
-            'weights': ['yolov5\\runs\\colab_trained\\best_yolov5s_3classes.pt'], 
+            'weights': ['models\\best_yolov5s.pt'], 
             'source': self.currentlySelectedFolder, 
             'data': WindowsPath('data/coco128.yaml'), 
             'imgsz': [640, 640], 
