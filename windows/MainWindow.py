@@ -408,7 +408,7 @@ class MainWindow(QMainWindow):
 
         # Аргументы для модели =================================================
         options = {
-            'weights': ['models\\best_yolov5s.pt'], 
+            'weights': ['models\\best_yolov5x_10e.pt'], 
             'source': self.currentlySelectedFolder, 
             'data': WindowsPath('data/coco128.yaml'), 
             'imgsz': [640, 640], 
