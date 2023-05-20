@@ -91,6 +91,8 @@ def accuracy(detectOutput : dict, filesCount) -> float:
 class MainWindow(QMainWindow):
     currentlySelectedFolder = ""
 
+    labelsNotShowed = False
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -480,8 +482,8 @@ class MainWindow(QMainWindow):
         
         # Вызов функции детектирования =========================================
         detectResults = detect(options)
-        # for key, val in detectResults.items():
-        #     print(f"{key} : {val}")
+        for key, val in detectResults.items():
+            print(f"{key} : {val}")
         print(f"Точность при валидации: {accuracy(detectResults, len(os.listdir(self.currentlySelectedFolder)))}%")
         # ======================================================================
 
