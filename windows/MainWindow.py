@@ -311,7 +311,7 @@ class MainWindow(QMainWindow):
         swans_1 = [1,  3, 10, 3, 4, 1, 5, 8, 2, 3, 1, 4]
         swans_2 = [4, 12, 14, 7, 4, 1, 6, 5, 6, 8, 4, 6]
         swans_3 = [13, 9, 10, 3, 8, 9, 5, 8, 2, 7, 2, 3]
-        labels  = ["Лебеди 1", "Лебеди 2", "Лебеди 3"]
+        labels  = ["Шипуны", "Кликуны", "Малые лебеди"]
         
         self.axes.plot(months, swans_1, label=labels[0])
         self.axes.plot(months, swans_2, label=labels[1])
