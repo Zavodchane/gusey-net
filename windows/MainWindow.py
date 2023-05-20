@@ -1,3 +1,5 @@
+import datetime
+
 from PyQt6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -92,8 +94,6 @@ def accuracy(detectOutput : dict, filesCount) -> float:
 
 class MainWindow(QMainWindow):
     currentlySelectedFolder = ""
-
-    labelsNotShowed = False
 
     def __init__(self) -> None:
         super().__init__()
@@ -493,8 +493,19 @@ class MainWindow(QMainWindow):
         
         # Вызов функции детектирования =========================================
         detectResults = detect(options)
-        for key, val in detectResults.items():
-            print(f"{key} : {val}")
+        en_to_rus = {'small': 'Малые лебеди',
+                     'klikun': 'Кликуны',
+                     'shipun': 'Шипуны'}
+        date = str(datetime.datetime.now()).split()[0]
+        date = date.replace('-', '.')
+        date = date.split('.')
+        date = f"{date[2]}.{date[1].replace('0', '')}.{date[0]}"
+        for _, val in detectResults.items():
+            for swan in val:
+                statistic_db.add_record(swan_name=en_to_rus[swan],
+                                        quantity=1,
+                                        date=date)
+
         print(f"Точность при валидации: {accuracy(detectResults, len(os.listdir(self.currentlySelectedFolder)))}%")
         # ======================================================================
 
