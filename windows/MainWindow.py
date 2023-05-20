@@ -440,7 +440,8 @@ class MainWindow(QMainWindow):
 
         
         # Вызов функции детектирования =========================================
-        detect(options)
+        detectResults = detect(options)
+        print(detectResults)
         # ======================================================================
 
 

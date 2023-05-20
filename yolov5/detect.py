@@ -6,6 +6,8 @@ import sys
 import datetime
 from pathlib import Path, WindowsPath
 
+from collections import defaultdict
+
 import torch
 
 '''
@@ -62,7 +64,10 @@ def run(
         half=False,  # use FP16 half-precision inference
         dnn=False,  # use OpenCV DNN for ONNX inference
         vid_stride=1,  # video frame-rate stride
-):
+) -> dict:
+    # Словарь который будет содержать результаты детекции с классами и процентами уверенности
+    filesToLabelsDict = defaultdict(list)
+
     source = str(source)
     save_img = not nosave and not source.endswith('.txt')  # save inference images
     is_file = Path(source).suffix[1:] in (IMG_FORMATS + VID_FORMATS)
@@ -142,6 +147,8 @@ def run(
                     n = (det[:, 5] == c).sum()  # detections per class
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
+                buff_idx = 0
+
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
                     if save_txt:  # Write to file
@@ -153,6 +160,12 @@ def run(
                     if save_img or save_crop or view_img:  # Add bbox to image
                         c = int(cls)  # integer class
                         label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
+
+
+                        # Добавление лейбла в словарь в соответствии с файлом к которому он относится
+                        filesToLabelsDict[p.name].append(label)
+                        
+
                         annotator.box_label(xyxy, label, color=colors(c, True))
                     if save_crop:
                         save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
@@ -198,7 +211,9 @@ def run(
     if update:
         strip_optimizer(weights[0])  # update model (to fix SourceChangeWarning)
 
+    return filesToLabelsDict
 
-def detect(opt):
+
+def detect(opt) -> dict:
     check_requirements(exclude=('tensorboard', 'thop'))
-    run(**opt)
+    return run(**opt)
