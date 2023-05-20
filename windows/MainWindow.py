@@ -36,6 +36,8 @@ from torch import cuda
 
 from threading import Thread
 
+from windows import statistic_db
+
 
 def loadPaths(startpath: str, tree : QTreeWidget) -> None:
     '''
@@ -397,35 +399,44 @@ class MainWindow(QMainWindow):
 
     
     def plotPlaceholderData(self):
-        '''
-        Затычка для данных графиков
-        '''
         self.axes = self.figure.add_subplot(211)
 
         self.axes.grid(alpha = 0.2)
-        
+
         self.axes.set_ylabel("Кол-во лебедей")
         self.axes.set_xlabel("Месяц")
 
+        labels = ["Шипуны", "Кликуны", "Малые лебеди"]
         months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
-        swans_1 = [1,  3, 10, 3, 4, 1, 5, 8, 2, 3, 1, 4]
-        swans_2 = [4, 12, 14, 7, 4, 1, 6, 5, 6, 8, 4, 6]
-        swans_3 = [13, 9, 10, 3, 8, 9, 5, 8, 2, 7, 2, 3]
-        labels  = ["Шипуны", "Кликуны", "Малые лебеди"]
-        
-        self.axes.plot(months, swans_1, label=labels[0])
-        self.axes.plot(months, swans_2, label=labels[1])
-        self.axes.plot(months, swans_3, label=labels[2])
+        swans_quantity_list = []
+        for label in labels:
+            swans_quantity = self._get_swans_quantity(label)
+            self.axes.plot(months, swans_quantity, label=label)
+            swans_quantity_list.append(swans_quantity)
 
         self.axes.legend()
 
-
+        all_sum = sum(swans_quantity_list[0]) + sum(swans_quantity_list[1]) + sum(swans_quantity_list[2])
         self.totalAxes = self.figure.add_subplot(212)
-        self.totalAxes.pie([sum(swans_1), sum(swans_2), sum(swans_3)], labels=labels, wedgeprops=dict(width = 0.5))
 
+        if all_sum == 0:
+            self.totalAxes.pie([1, 1, 1],
+                               labels=labels, wedgeprops=dict(width=0.5))
+        else:
+            self.totalAxes.pie([sum(swans_quantity_list[0]), sum(swans_quantity_list[1]), sum(swans_quantity_list[2])],
+                               labels=labels, wedgeprops=dict(width = 0.5))
         self.canvas.draw()
 
-    
+
+    @staticmethod
+    def _get_swans_quantity(label: str) -> list:
+        months_swan_quantity = [0 for i in range(12)]
+        for swan_data in statistic_db.get_records_by_name(label):
+            month = int(swan_data[2].split('.')[1])-1
+            months_swan_quantity[month] += swan_data[1]
+        return months_swan_quantity
+
+
     def onDetectButtonClicked(self):
         '''
         Функция вызываемая при нажатии на кнопку Detect, создает отдельный поток для выполнения детектирования
