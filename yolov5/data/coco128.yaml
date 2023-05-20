@@ -1,0 +1,6 @@
+train: /content/dataset/train/images
+val: C:\Users\meiz\Downloads\dataset\val\images
+test: /content/test
+
+nc: 3
+names: ['shipun', 'klikun', 'small']
