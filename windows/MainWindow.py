@@ -518,8 +518,35 @@ class MainWindow(QMainWindow):
         # Обновления поля выбранной в данный момент папки ======================
         self.currentlySelectedFolder = ""
         self.updatePathDisplay()
+        self.updateGraphs()
         # ======================================================================
 
+    def updateGraphs(self):
+        self.axes.clear()
+        self.axes.grid(alpha = 0.2)
+        self.axes.set_ylabel("Кол-во лебедей")
+        self.axes.set_xlabel("Месяц")
+
+        labels = ["Шипуны", "Кликуны", "Малые лебеди"]
+        months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+        swans_quantity_list = []
+        for label in labels:
+            swans_quantity = self._get_swans_quantity(label)
+            self.axes.plot(months, swans_quantity, label=label)
+            swans_quantity_list.append(swans_quantity)
+
+        self.axes.legend()
+
+        all_sum = sum(swans_quantity_list[0]) + sum(swans_quantity_list[1]) + sum(swans_quantity_list[2])
+
+        self.totalAxes.clear()
+        if all_sum == 0:
+            self.totalAxes.pie([1, 1, 1],
+                               labels=labels, wedgeprops=dict(width=0.5))
+        else:
+            self.totalAxes.pie([sum(swans_quantity_list[0]), sum(swans_quantity_list[1]), sum(swans_quantity_list[2])],
+                               labels=labels, wedgeprops=dict(width=0.5))
+        self.canvas.draw()
 
     def treeItemClicked(self, it : QTreeWidgetItem, col):
         '''
