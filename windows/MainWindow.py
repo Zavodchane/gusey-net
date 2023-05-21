@@ -375,7 +375,7 @@ class MainWindow(QMainWindow):
 
         self.figure.subplots_adjust(top = 0.98, bottom=0.0, right = 0.98, left = 0.11)
 
-        self.plotPlaceholderData()
+        self.plotData()
 
 
         # Затычка поля для информации в текстовом виде =========================
@@ -401,7 +401,7 @@ class MainWindow(QMainWindow):
         self.thirdColLayout.addWidget(self.graphsAndInfoScroll)
 
     
-    def plotPlaceholderData(self):
+    def plotData(self):
         self.axes = self.figure.add_subplot(211)
 
         self.axes.grid(alpha = 0.2)
@@ -521,7 +521,7 @@ class MainWindow(QMainWindow):
         # ======================================================================
 
         self.updateGraphs()
-        
+
 
     def updateGraphs(self):
         self.axes.clear()
