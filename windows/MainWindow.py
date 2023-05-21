@@ -106,8 +106,6 @@ def accuracy(detectOutput : dict, filesCount) -> float:
     dataFrame = pd.DataFrame(data)
     dataFrame.to_csv(sep=";", encoding="utf-8", path_or_buf="tables\\output.csv", index = False)
 
-    print(data)
-
     return (correctFiles / filesCount) * 100
 
 
@@ -480,7 +478,7 @@ class MainWindow(QMainWindow):
 
         # Аргументы для модели =================================================
         options = {
-            'weights': ['models\\best_yolov5s_50e.pt'], 
+            'weights': ['models\\best_yolov5x_50e.pt'], 
             'source': self.currentlySelectedFolder, 
             'data': WindowsPath('data/coco128.yaml'), 
             'imgsz': [640, 640], 
