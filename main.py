@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QStyleFactory, QApplication
 
 from windows.MainWindow import MainWindow
-from windows.statistic_db import create_table
+# from windows.statistic_db import create_table
 
 import sys, os
 
@@ -19,7 +19,7 @@ def setupFolders():
         os.mkdir("results")
     except FileExistsError: pass
 
-create_table()
+# create_table()
 setupFolders()
 
 app = QApplication(sys.argv)
