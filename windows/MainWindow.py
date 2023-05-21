@@ -298,7 +298,7 @@ class MainWindow(QMainWindow):
         self.firstColLayout.addLayout(self.lineThicknessSliderLayout)
         self.firstColLayout.addWidget(self.deviceCheckBoxesLabel)
         self.firstColLayout.addLayout(self.deviceCheckBoxesLayout)
-        self.firstColLayout.addWidget(self.arelabelsNotShowedCheckBox)
+        # self.firstColLayout.addWidget(self.arelabelsNotShowedCheckBox)
         self.firstColLayout.addLayout(self.pathLayout)
         self.firstColLayout.addWidget(self.chooseFolderButton)
         self.firstColLayout.addWidget(self.detectButton)
