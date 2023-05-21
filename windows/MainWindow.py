@@ -518,8 +518,10 @@ class MainWindow(QMainWindow):
         # Обновления поля выбранной в данный момент папки ======================
         self.currentlySelectedFolder = ""
         self.updatePathDisplay()
-        self.updateGraphs()
         # ======================================================================
+
+        self.updateGraphs()
+        
 
     def updateGraphs(self):
         self.axes.clear()
