@@ -23,6 +23,8 @@ from PyQt6.QtCore import Qt
 
 import os
 
+import pandas as pd
+
 from constants.paths import RESULT_PATH
 from widgets.ImageBrowser import ImageBrowser
 
@@ -39,6 +41,8 @@ from torch import cuda
 from threading import Thread
 
 from windows import statistic_db
+
+from collections import defaultdict
 
 
 def loadPaths(startpath: str, tree : QTreeWidget) -> None:
@@ -71,6 +75,14 @@ def getItemFullPath(item : QTreeWidgetItem) -> str:
 
 
 def accuracy(detectOutput : dict, filesCount) -> float:
+    classNameToClassCode = {
+        "shipun" : 3,
+        "klikun" : 2,
+        "small"  : 1
+    }
+
+    data = defaultdict(list)
+
     correctFiles = 0
     labelsNotShowed = False
 
@@ -80,13 +92,21 @@ def accuracy(detectOutput : dict, filesCount) -> float:
         
         className = maxConfTuple[0]
 
+        print(className, fileName)
+
         if ("img" or "shipun") in fileName:
             if className == "shipun":
                 correctFiles += 1
         elif (className in fileName) and (className != ""):
             correctFiles += 1
 
+        data["name"].append(fileName)
+        data["class"].append(classNameToClassCode[className])
 
+    dataFrame = pd.DataFrame(data)
+    dataFrame.to_csv(sep=";", encoding="utf-8", path_or_buf="tables\\output.csv", index = False)
+
+    print(data)
     print(correctFiles, filesCount)
 
     return (correctFiles / filesCount) * 100
