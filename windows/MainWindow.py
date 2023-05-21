@@ -107,7 +107,6 @@ def accuracy(detectOutput : dict, filesCount) -> float:
     dataFrame.to_csv(sep=";", encoding="utf-8", path_or_buf="tables\\output.csv", index = False)
 
     print(data)
-    print(correctFiles, filesCount)
 
     return (correctFiles / filesCount) * 100
 
