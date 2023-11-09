@@ -21,4 +21,4 @@ python main.py
 ```
 
 ## Требования
-<li> Python >= 3.9
+<li> Python 3.9+
