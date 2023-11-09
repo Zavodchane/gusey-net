@@ -394,19 +394,10 @@ class MainWindow(QMainWindow):
 
         self.plotData()
 
-
-        # Затычка поля для информации в текстовом виде =========================
-        self.placeholderInfo = QTextBrowser()
-        self.placeholderInfo.setMaximumWidth(int(self.windowWidth / 3.5) - 20)
-        self.placeholderInfo.setText("Очень важная информация о лебедях и возможно гусях))")
-        # ======================================================================
-
-
         # Контейнер для графиков и информации ==================================
         self.GIContainer = QWidget()
         self.GIContainerLayout = QVBoxLayout()
         self.GIContainerLayout.addWidget(self.canvas)
-        self.GIContainerLayout.addWidget(self.placeholderInfo )
 
         self.GIContainer.setLayout(self.GIContainerLayout)
         
@@ -478,7 +469,7 @@ class MainWindow(QMainWindow):
 
         # Аргументы для модели =================================================
         options = {
-            'weights': ['models\\best_yolov5x_50e.pt'], 
+            'weights': ['models\\best_yolov5x_50e_exp.pt'], 
             'source': self.currentlySelectedFolder, 
             'data': WindowsPath('data/coco128.yaml'), 
             'imgsz': [640, 640], 
